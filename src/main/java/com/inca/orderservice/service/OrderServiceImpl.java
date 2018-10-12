@@ -1,7 +1,9 @@
 package com.inca.orderservice.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inca.orderservice.entity.Order;
+import com.inca.orderservice.tools.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
@@ -18,8 +20,13 @@ public class OrderServiceImpl implements OrderService {
 //    RestTemplate restTemplate;
 
     //    方式二
+//    @Autowired
+//    LoadBalancerClient loadBalancerClient;
+
+
+//    方式三
     @Autowired
-    LoadBalancerClient loadBalancerClient;
+    ProductClient productClient;
 
     @Override
     public Order saveOrder(Order order) throws Exception {
@@ -28,14 +35,15 @@ public class OrderServiceImpl implements OrderService {
 
 
         //       方式二
-        ServiceInstance instance = loadBalancerClient.choose("product-service");
-        String url = String.format("http://%s:%s/api/product/findOne?id=" + order.getProductId(), instance.getHost(), instance.getPort());
-        RestTemplate restTemplate = new RestTemplate();
-        Object obj = restTemplate.getForObject(url, Object.class);
+//        ServiceInstance instance = loadBalancerClient.choose("product-service");
+//        String url = String.format("http://%s:%s/api/product/findOne?id=" + order.getProductId(), instance.getHost(), instance.getPort());
+//        RestTemplate restTemplate = new RestTemplate();
+//        Object obj = restTemplate.getForObject(url, Object.class);
 
 
+//        方式三
+        String skuStr = productClient.findById(Integer.valueOf(order.getProductId()));
         ObjectMapper om = new ObjectMapper();
-        String skuStr = om.writeValueAsString(obj);
         HashMap sku = om.readValue(skuStr, HashMap.class);
         System.out.println(sku.get("name"));
         order.setProductName((String) sku.get("name"));
