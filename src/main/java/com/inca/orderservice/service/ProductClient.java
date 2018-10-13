@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductClient {
 
     @RequestMapping("/api/product/list")
-    String list(@RequestParam(value = "id") Integer id);
+    String list();
 
     @RequestMapping("/api/product/findOne")
     String findById(@RequestParam(value = "id") Integer id);
